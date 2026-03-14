@@ -1,7 +1,7 @@
 {
-  "name": "ipad-kids",
-  "displayName": "iPad Kids",
-  "description": "Gamified coding for iPad Kids",
+  "name": "brucey-loosey",
+  "displayName": "bruce come back",
+  "description": "Gamified coding for brucey loosey",
   "version": "0.0.1",
   "publisher": "diversityHires2.0",
   "private": true,
@@ -22,15 +22,20 @@
       "explorer": [
         {
           "type": "webview",
-          "id": "ipadKids.dashboard",
-          "name": "iPad Kids"
+          "id": "bruce.window",
+          "name": "bruceY looseY"
         }
       ]
     },
     "commands": [
       {
-        "command": "ipadKids.getRoasted",
+        "command": "bruce.getRoasted",
         "title": "Get some motivation :)"
+      },
+      {
+        "command": "bruce.start",
+        "title": "Start a new loosey session",
+        "category": "brucey loosey"
       }
     ]
   },
