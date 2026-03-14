@@ -1,8 +1,14 @@
 {
-  "name": "dopamine-feeder",
-  "displayName": "dopamine-feeder",
-  "description": "Gamified coding for ipad kids",
+  "name": "ipad-kids",
+  "displayName": "iPad Kids",
+  "description": "Gamified coding for iPad Kids",
   "version": "0.0.1",
+  "publisher": "diversityHires2.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/notaika/202610-hackthebreak"
+  },
   "engines": {
     "vscode": "^1.110.0"
   },
@@ -12,10 +18,19 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "type": "webview",
+          "id": "ipadKids.dashboard",
+          "name": "iPad Kids"
+        }
+      ]
+    },
     "commands": [
       {
-        "command": "dopamine-feeder.helloWorld",
-        "title": "Hello World"
+        "command": "ipadKids.getRoasted",
+        "title": "Get some motivation :)"
       }
     ]
   },
