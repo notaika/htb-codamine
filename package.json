@@ -16,6 +16,10 @@
       {
         "command": "dopamine-feeder.helloWorld",
         "title": "Hello World"
+      },
+	  {
+        "command": "dopamine-feeder.keyCountTest",
+        "title": "Key Count Test"
       }
     ]
   },
