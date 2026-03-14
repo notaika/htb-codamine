@@ -1,8 +1,14 @@
 {
-  "name": "dopamine-feeder",
-  "displayName": "dopamine-feeder",
-  "description": "Gamified coding for ipad kids",
+  "name": "brucey-loosey",
+  "displayName": "bruce come back",
+  "description": "Gamified coding for brucey loosey",
   "version": "0.0.1",
+  "publisher": "diversityHires2.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/notaika/202610-hackthebreak"
+  },
   "engines": {
     "vscode": "^1.110.0"
   },
@@ -12,10 +18,24 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "type": "webview",
+          "id": "bruce.window",
+          "name": "bruceY looseY"
+        }
+      ]
+    },
     "commands": [
       {
-        "command": "dopamine-feeder.helloWorld",
-        "title": "Hello World"
+        "command": "bruce.getRoasted",
+        "title": "Get some motivation :)"
+      },
+      {
+        "command": "bruce.start",
+        "title": "Start a new loosey session",
+        "category": "brucey loosey"
       }
     ]
   },
