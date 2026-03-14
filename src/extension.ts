@@ -82,7 +82,6 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
       enableScripts: true,
       localResourceRoots: [this._extensionUri],
     };
-
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
   }
 
@@ -116,25 +115,22 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
-  const scriptUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(this._extensionUri, "webview-ui", "dist", "assets", "index.js")
-  );
-  const styleMainUri = webview.asWebviewUri(
-    vscode.Uri.joinPath(this._extensionUri, "webview-ui", "dist", "assets", "index.css")
-  );
-  const nonce = getNonce();
+    // We only need the bundled JS. esbuild handles PNGs as dataurls.
+    const scriptUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "out", "webview.js"),
+    );
+    const nonce = getNonce();
 
     return `<!DOCTYPE html>
     <html lang="en">
     <head>
       <meta charset="UTF-8">
-      <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+      <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} data:; script-src 'nonce-${nonce}' 'unsafe-eval';">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link href="${styleMainUri}" rel="stylesheet">
-      <title>Dopamine Feeder</title>
+      <title>Brucey Loosey</title>
     </head>
     <body>
-      <div id="root"></div>
+      <div id="root">If you see this, React hasn't loaded yet!</div>
       <script nonce="${nonce}" src="${scriptUri}"></script>
     </body>
     </html>`;
