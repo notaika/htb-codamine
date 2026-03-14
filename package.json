@@ -1,21 +1,16 @@
 {
   "name": "brucey-loosey",
-  "displayName": "bruce come back",
-  "description": "Gamified coding for brucey loosey",
+  "displayName": "Brucey Loosey",
+  "description": "Gamified coding for Brucey Loosey",
   "version": "0.0.1",
   "publisher": "diversityHires2.0",
   "private": true,
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/notaika/202610-hackthebreak"
-  },
   "engines": {
     "vscode": "^1.110.0"
   },
-  "categories": [
-    "Other"
+  "activationEvents": [
+    "onView:bruce.window"
   ],
-  "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "views": {
@@ -23,7 +18,7 @@
         {
           "type": "webview",
           "id": "bruce.window",
-          "name": "bruceY looseY"
+          "name": "brucey loosey"
         }
       ]
     },
@@ -45,7 +40,8 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "build-webview": "npx esbuild webview-ui/src/main.tsx --bundle --outfile=out/webview.js --external:vscode --format=cjs --platform=browser --loader:.png=dataurl --loader:.svg=dataurl --loader:.css=css --jsx=automatic"
   },
   "devDependencies": {
     "@types/vscode": "^1.110.0",
@@ -55,7 +51,11 @@
     "eslint": "^9.39.3",
     "typescript": "^5.9.3",
     "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2"
+    "@vscode/test-electron": "^2.5.2",
+    "esbuild": "^0.25.0"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   }
 }
-   
