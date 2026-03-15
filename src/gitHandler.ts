@@ -32,6 +32,24 @@ const getCommitMessage = (folder: string): Promise<string> => {
 };
 
 /**
+ * Returns the changes between the previous and most recent commit.
+ *
+ * @param folder folder to run the git command in
+ * @returns commit changes as a strinf
+ */
+const getCommitChanges = (folder: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    exec("git diff HEAD~1 HEAD", { cwd: folder }, (error, output) => {
+      if (error) {
+        resolve("No changes were made.");
+      } else {
+        resolve(output);
+      }
+    });
+  });
+};
+
+/**
  * A listener that gets triggered everytime a user makes a commit.
  * See: https://github.com/microsoft/vscode/blob/main/extensions/git/src/api/git.constants.ts
  * See: https://github.com/microsoft/vscode/blob/main/extensions/git/src/api/extension.ts
@@ -39,11 +57,11 @@ const getCommitMessage = (folder: string): Promise<string> => {
  * See: https://github.com/microsoft/vscode/blob/main/extensions/git/src/api/git.d.ts
  *
  * @param context manages cleanup (given by VS Code in activate())
- * @param onCommit the event listener that watches for a commit
+ * @param onCommit the callback event listener that watches for a commit
  */
 export function watchForCommits(
   context: vscode.ExtensionContext,
-  onCommit: (message: string) => void,
+  onCommit: (data: { diff: string; message: string }) => void,
 ) {
   // Kept getting "possibly 'undefined'"", so... safety check
   const gitExtension =
@@ -51,6 +69,7 @@ export function watchForCommits(
 
   if (!gitExtension) {
     console.error("Git extension is undefined.");
+    return;
   }
 
   const git = gitExtension.getAPI(1);
@@ -60,9 +79,12 @@ export function watchForCommits(
 
     // Basically when a commit happens on the repo, get the commit message on folder path.
     const commitListener = repo.onDidCommit(() => {
-      getCommitMessage(folder)
-        .then((message) => {
-          onCommit(message);
+      getCommitChanges(folder)
+        .then((diff) => {
+          return getCommitMessage(folder).then((message) => {
+            onCommit({ diff, message });
+            //        ^ shorthand for { diff: diff, message: message }
+          });
         })
         .catch((error) => {
           console.error("Could not grab commit message: ", error);
