@@ -55,21 +55,37 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "out", "webview.js"),
     );
+
+    const apiUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "src", "app", "test-api.js"),
+    );
+
+    const styleUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "out", "webview.css"),
+    );
+
     const nonce = getNonce();
 
-    return `<!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} data:; script-src 'nonce-${nonce}' 'unsafe-eval';">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Brucey Loosey</title>
-    </head>
-    <body>
-      <div id="root">If you see this, React hasn't loaded yet!</div>
-      <script nonce="${nonce}" src="${scriptUri}"></script>
-    </body>
-    </html>`;
+    return `<!DOCTYPE html>                                                                    
+    <html lang="en">                                                                           
+    <head>                                                                                     
+    <meta charset="UTF-8">                                                                   
+    <meta http-equiv="Content-Security-Policy"                                               
+    content="default-src 'none';                                                             
+            style-src ${webview.cspSource} 'unsafe-inline';                                 
+            img-src ${webview.cspSource} data: vscode-webview-resource:;                    
+            script-src 'nonce-${nonce}' 'unsafe-eval' ${webview.cspSource};                 
+            connect-src http://127.0.0.1:3001 http://localhost:3001;">                      
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">                   
+    <link href="${styleUri}" rel="stylesheet">                                               
+    <title>Brucey Loosey</title>                                                             
+  </head>                                                                                    
+  <body>                                                                                     
+    <div id="root">Loading Brucey Loosey...</div>                                            
+    <script nonce="${nonce}" src="${scriptUri}"></script>                                    
+    <script nonce="${nonce}" src="${apiUri}"></script>                                       
+  </body>                                                                                    
+  </html>`;
   }
 }
 
