@@ -1,44 +1,44 @@
 .progressArea {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .progressContainer {
-    position: relative;
-    height: 20px;
-    margin: 10px;
-    border: 2px solid white;
-    border-radius: 2px;
+  position: relative;
+  height: 20px;
+  margin: 10px;
+  border: 2px solid white;
+  border-radius: 2px;
 }
 
 .progress {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0%;
-    height: 100%;
-    background-color: rgb(95, 11, 95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0%;
+  height: 100%;
+  background-color: rgb(95, 11, 95);
 }
 
 .progressInfo {
-    padding-left: 10px;
-    padding-right: 10px;
-    display: flex;
-    justify-content: space-between;
+  padding-left: 10px;
+  padding-right: 10px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .progressLabel {
-    padding: 0%;
-    margin: 0%;
-    top: 10%;
-    width: 100%;
-    text-align: center;
-    position: absolute;
-    font-size: 14px;
+  padding: 0%;
+  margin: 0%;
+  top: 10%;
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  font-size: 14px;
 }
 
 .progressInfo2 {
-    justify-content: center !important;
-    align-items: center !important;
+  justify-content: center !important;
+  align-items: center !important;
 }
