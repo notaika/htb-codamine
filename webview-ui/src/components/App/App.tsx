@@ -1,56 +1,51 @@
-
 import "./App.css";
 import Summary from "../Summary/Summary";
 import Arsen from "../ForArsen/Arsen";
 import { useState, useEffect } from "react";
-import XPBar from "../XPBar";
+import XPBar from "../XPBar/XPBar";
 import LinesWritten from "../LinesWritten/LinesWritten";
 
 declare function acquireVsCodeApi(): {
-  postMessage: (message: unknown) => void
-  getState: () => any
-  setState: (state: unknown) => void
-}
+  postMessage: (message: unknown) => void;
+  getState: () => any;
+  setState: (state: unknown) => void;
+};
 
-const vscode = acquireVsCodeApi()
+const vscode = acquireVsCodeApi();
 
 function App() {
-  const [xp, setXp] = useState(0)
+  const [xp, setXp] = useState(0);
+  const [summary, setSummary] = useState("");
 
   useEffect(() => {
     const handler = (event: MessageEvent) => {
-      const message = event.data 
-
-        console.log('message received:', message)
+      const message = event.data;
 
       switch (message.type) {
-        case 'initializeBar':
-
-          console.log('initializeBar fired, xp:', message.xp)
-
-          setXp(message.xp)
-          break
-        case 'updateXP':
-
-          console.log('updateXP fired, xp:', message.xp)
-          setXp(message.xp)
-          vscode.setState({xp: message.xp})
+        case "initializeBar":
+          setXp(message.xp);
           break;
-        case 'levelUp':
-          console.log('levelup recieve', message.xpToNext)
-          break
+        case "updateXP":
+          setXp(message.xp);
+          vscode.setState({ xp: message.xp });
+          break;
+        case "levelUp":
+          break;
+        case "aiSummary":
+          setSummary(message.summary);
+          break;
       }
-    }
+    };
 
-    window.addEventListener('message', handler)
-    return() => window.removeEventListener('message', handler)
-  }, [])
+    window.addEventListener("message", handler);
+    return () => window.removeEventListener("message", handler);
+  }, []);
 
   return (
     <>
       <section id="panel" className="dashboard">
+        <Summary summary={summary} />
         <Arsen />
-        <Summary />
         <XPBar xp={xp} />
         <LinesWritten />
       </section>
