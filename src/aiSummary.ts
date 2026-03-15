@@ -1,51 +1,49 @@
-interface AnthropicApiResponse {
-  id: string;
-  type: string;
-  role: string;
-  content: {
-    type: string;
-    text: string;
-  }[];
-  model: string;
-  stop_reason: string;
-  usage: {
-    input_tokens: number;
-    output_tokens: number;
-  };
-}
+import * as dotenv from "dotenv";
+import * as path from "path";
 
-// replace later
-const API_URL = "http://127.0.0.1:3001/v1/messages";
+dotenv.config({ path: path.join(__dirname, "..", ".env") });
 
 export async function getAiSummary(commitDiff: string): Promise<string> {
+  const API_KEY = process.env.API_KEY?.trim();
+  const GEMINI_URL =
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent";
+
+  if (!API_KEY) {
+    return "Error: No API Key found in .env file.";
+  }
+
   try {
-    const response = await fetch(API_URL, {
+    const prompt = `You are a savage coding buddy. Look at this code diff and summarize what the developer just built or changed in 1-2 fun sentences. Be funny, encouraging with savage duolingo-like humour: \n\n"${commitDiff}"`;
+
+    const response = await fetch(`${GEMINI_URL}?key=${API_KEY}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": "bruce-save-us",
       },
       body: JSON.stringify({
-        model: "bcit-AIModel-67",
-        max_tokens: 67,
-        messages: [
-          {
-            role: "user",
-            content: `You are a savage coding buddy. Look at this code diff and summarize what the developer just built or changed in 1-2 fun sentences. Be funny, encouraging and duolingo-like humour:\n\n"${commitDiff}"`,
-          },
-        ],
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          maxOutputTokens: 500,
+        },
       }),
     });
 
+    const data: any = await response.json().catch(() => ({}));
+
     if (!response.ok) {
-      return "AI Summary Error: " + response.statusText;
+      console.error("Gemini API Error:", response.status, JSON.stringify(data));
+      return `Error: Gemini API ${response.status}. Check Debug Console.`;
     }
 
-    const data: AnthropicApiResponse =
-      (await response.json()) as AnthropicApiResponse;
-    return data.content[0].text;
-  } catch (error) {
-    console.error("Could not fetch summary:", error);
-    throw error;
+    if (data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+      const fullSummary = data.candidates[0].content.parts[0].text;
+      console.log("Full Gemini Summary:", fullSummary);
+      return fullSummary;
+    }
+
+    return "Error: Unexpected response format from Gemini.";
+  } catch (error: any) {
+    console.error("Fetch error:", error);
+    return `Error: ${error.message || "Unknown fetch error"}`;
   }
 }

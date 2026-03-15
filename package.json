@@ -8,7 +8,7 @@
   "engines": {
     "vscode": "^1.110.0"
   },
-  "activationEvents": [ 
+  "activationEvents": [
     "onView:bruce.window"
   ],
   "main": "./out/extension.js",
@@ -47,17 +47,19 @@
     "vscode.git"
   ],
   "devDependencies": {
-    "@types/vscode": "^1.110.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
-    "typescript-eslint": "^8.56.1",
-    "eslint": "^9.39.3",
-    "typescript": "^5.9.3",
+    "@types/vscode": "^1.110.0",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
-    "esbuild": "^0.25.0"
+    "esbuild": "^0.25.0",
+    "eslint": "^9.39.3",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1"
   },
   "dependencies": {
+    "@google/genai": "^1.45.0",
+    "dotenv": "^17.3.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   }
