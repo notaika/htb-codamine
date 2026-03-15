@@ -15,30 +15,40 @@ declare function acquireVsCodeApi(): {
 
 const vscode = acquireVsCodeApi()
 
+
 function App() {
   const [xp, setXp] = useState(0)
+  const [commitMsg, setCommitMsg] = useState("")
+  const [lines, setLines] = useState(0);
+
+  
 
   useEffect(() => {
     const handler = (event: MessageEvent) => {
       const message = event.data 
 
-        console.log('message received:', message)
-
       switch (message.type) {
         case 'initializeBar':
-
-          console.log('initializeBar fired, xp:', message.xp)
-
           setXp(message.xp)
           break
         case 'updateXP':
-
-          console.log('updateXP fired, xp:', message.xp)
           setXp(message.xp)
-          vscode.setState({xp: message.xp})
-          break;
+          vscode.setState({ xp: message.xp })
+          break
         case 'levelUp':
-          console.log('levelup recieve', message.xpToNext)
+          break
+        case 'numLines':
+          setLines(message.lines)
+          break
+        case 'commitMessage':
+          setCommitMsg(message.commitMsg)
+          console.log(message.commitMsg)
+          break
+        case 'commitSummary':
+          setCommitMsg(message.summary)
+          setTimeout(() => {
+            setCommitMsg("")
+          }, 3000)
           break
       }
     }
@@ -51,10 +61,10 @@ function App() {
     <>
       <section id="panel" className="dashboard">
         <Arsen />
-        <Summary />
+        <Summary commitMsg={commitMsg} />
         <Sprite />
         <XPBar xp={xp} />
-        <LinesWritten />
+        <LinesWritten lines={lines} />
       </section>
     </>
   );
