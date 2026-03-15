@@ -4,6 +4,7 @@ import Summary from "../Summary/Summary";
 import Arsen from "../ForArsen/Arsen";
 import { useState, useEffect } from "react";
 import XPBar from "../XPBar/XPBar";
+import LinesWritten from "../LinesWritten/LinesWritten";
 
 declare function acquireVsCodeApi(): {
   postMessage: (message: unknown) => void
@@ -51,6 +52,7 @@ function App() {
         <Arsen />
         <Summary />
         <XPBar xp={xp} />
+        <LinesWritten />
       </section>
     </>
   );
