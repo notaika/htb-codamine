@@ -25,13 +25,19 @@ export default function XPBar({ xp }: XPBarProps) {
 
   return (
     <div>
-      <p>Level: {currentLevel}</p>
-      <p>Next Level: {nextLevel}</p>
-      <p>Percent: {Math.floor(percentage)}%</p>
-      <p>
-        EXP: {Math.round(totalXP)} / {nextLevelXP}
-      </p>
-      <p>Remaining: {xpRemaining}</p>
+      <div className="progressArea">
+        <div className="progressInfo">
+          <span>Level: {currentLevel}</span> <span>Next: {nextLevel}</span>
+        </div>
+        <div className="progressContainer" title={`Remaining: ${xpRemaining}`}>
+          <div className="progress" style={{width: `${Math.floor(percentage)}%`}}>
+          </div>
+          <span className="progressLabel">{Math.floor(percentage)}%</span>
+        </div>
+        <div className="progressInfo">
+          <span>EXP: {Math.round(totalXP)} / {nextLevelXP}</span>
+        </div>
+      </div>
     </div>
   );
 }
