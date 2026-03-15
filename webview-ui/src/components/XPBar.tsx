@@ -1,6 +1,5 @@
 interface XPBarProps {
     xp: number
-    level: number
 }
 
 
@@ -14,35 +13,60 @@ interface ProgressResult {
     nextLevelXP: number
 }
 
-const LEVELS = [
-    {level: 1, xpRequired: 0},   
-    {level: 2, xpRequired: 100},
-    {level: 3, xpRequired: 500},
-    {level: 4, xpRequired: 1000},
-    {level: 5, xpRequired: 1500},
-]
-
-function getProgress(totalXP: number) ProgressResult {
-
-    const currentLevel = LEVELS.findLast(lvl => totalXP >= lvl.xpRequired) ?? LEVELS[0]
-    const nextLevel = LEVELS.find(lvl => totalXP < lvl.xpRequired) ?? LEVELS[LEVELS.length - 1]
-    const percentage = Math.min((totalXP / nextLevel.xpRequired) * 100, 100)
-    const showPercentage = percentage.toFixed(1)
-    const xpRemaining = nextLevel.xpRequired - totalXP
-    
-    return {
-    currentLevel: currentLevel.level,
-    nextLevel: nextLevel.level,
-    percentage,
-    showPercentage,
-    xpRemaining,
-    totalXP,
-    nextLevelXP: nextLevel.xpRequired
-  }
-
-    
+function xpForLevel(level: number): number {
+  if (level <= 0) return 100
+  return 100 * (1.15 ** level) + xpForLevel(level - 1)
 }
 
+function getProgress(totalXP: number): ProgressResult {
 
+    let currentLevel = 1
+
+    while (totalXP >= xpForLevel(currentLevel)) {
+    currentLevel++
+  }
+    currentLevel--
+    
+    const currentLevelXP = Math.round(xpForLevel(currentLevel))
+    const nextLevelXP = Math.round(xpForLevel(currentLevel + 1))
+    const xpIntoLevel = totalXP - currentLevelXP
+    const xpNeededForLevel = nextLevelXP - currentLevelXP
+    const percentage = Math.min((xpIntoLevel / xpNeededForLevel) * 100, 100)
+    const showPercentage = percentage.toFixed(1)
+    const xpRemaining = Math.round(nextLevelXP - totalXP)
+    
+    return {
+        currentLevel,
+        nextLevel: currentLevel + 1,
+        percentage,
+        showPercentage,
+        xpRemaining,
+        totalXP,
+        nextLevelXP
+  }
+
+}
+
+export default function XPBar({xp}: XPBarProps){
+    const{
+        currentLevel,
+        nextLevel,
+        showPercentage,
+        xpRemaining,
+        totalXP,
+        nextLevelXP
+    } = getProgress(xp)
+
+    return(
+        <div>
+            <p>Level: {currentLevel}</p>
+            <p>Next Level: {nextLevel}</p>
+            <p>Percent: {showPercentage}%</p>
+            <p>EXP: {totalXP} / {nextLevelXP}</p>
+            <p>Remaining: {xpRemaining}</p>
+
+        </div>
+    )
+}
 
 
