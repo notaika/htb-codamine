@@ -36,6 +36,7 @@ export function useAiMotivation(commitMsg: string) {
         });
 
         const data: AnthropicApiResponse = await response.json();
+        // ?. means optional
         if (data.content?.[0]) {
           setAiSummary(data.content[0].text);
         }

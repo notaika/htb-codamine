@@ -21,7 +21,7 @@ export function LinesWritten() {
           break;
       }
     })
-  });
+  }, []);
 
   return (
       <p>You've written {numLines} lines of code today!</p>
