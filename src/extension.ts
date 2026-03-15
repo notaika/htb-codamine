@@ -4,7 +4,6 @@ const pressesKey = 'keypresses';
 const levelKey = 'level';
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log("Brucey Loosey is active!");
 
   // 1. REGISTER THE SIDEBAR PROVIDER
   const provider = new BruceViewProvider(context.extensionUri);
