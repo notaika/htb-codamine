@@ -31,3 +31,10 @@
 .hidden {
   opacity: 0;
 }
+.showQuip {
+  opacity: 1;
+}
+
+.hideQuip {
+  opacity: 0;
+}

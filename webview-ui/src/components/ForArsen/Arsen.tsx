@@ -4,28 +4,25 @@ import { generateMotivationQuips } from "../../utils/utils";
 
 export default function Arsen() {
   const [quip, setQuip] = useState<string | null>(null);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const triggerQuipEvent = () => {
       const newQuip = generateMotivationQuips();
       setQuip(newQuip);
+      setVisible(true);
 
-      // make it disappear after 5 seconds (maybe a fade out?)
-      setTimeout(() => {
-        setQuip(null);
-      }, 5000);
+      setTimeout(() => setVisible(false), 4500);
+      setTimeout(() => setQuip(null), 5000);
     };
 
-    // pop up every 10 seconds for now while testing
     const popUpInterval = setInterval(triggerQuipEvent, 10000);
-
-    // clear interval when it unmounts
     return () => clearInterval(popUpInterval);
   }, []);
 
   return (
-    <div className={`quip-bubble ${quip ? "showQuip" : "hideQuip"}`}>
-      {quip && <p className="quip">{quip}</p>}
+    <div className={`quip-bubble ${visible ? "showQuip" : "hideQuip"}`}>
+      <p className="quip">{quip}</p>
     </div>
   );
 }

@@ -54,20 +54,20 @@ export default function Summary() {
 
       fetchMotivation();
     }, [commitMsg]);
-
     return aiSummary;
   }
 
-  const gitMessage = "hardcoded for testing";
+  const gitMessage = "This is a git commit message. Fixed a few bugs, patched callbackFunction, added two sprites.";
   const newSummary = useAiMotivation(gitMessage);
 
   useEffect(() => {
     // pass git message from API into useAiMotivation
     setSummary(newSummary);
-  }, []);
+  }, [newSummary]);
 
   return (
     <div className="summary">
+      <h1>This is the summary</h1>
       <p className="summary__text">{summary}</p>
     </div>
   );
