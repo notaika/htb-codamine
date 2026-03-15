@@ -7,51 +7,51 @@ interface ProgressResult {
     currentLevel: number
     nextLevel: number
     percentage: number
-    showPercentage: string
     xpRemaining: number
     totalXP: number
     nextLevelXP: number
 }
 
 function xpForLevel(level: number): number {
-  if (level <= 0) return 100
+  if (level <= 0) return 100;
   return 100 * (1.15 ** level) + xpForLevel(level - 1)
 }
 
+
+
 function getProgress(totalXP: number): ProgressResult {
 
-    let currentLevel = 1
+    let currentLevel = 0
 
-    while (totalXP >= xpForLevel(currentLevel)) {
+    while (totalXP >= Math.round(xpForLevel(currentLevel + 1))) {
     currentLevel++
   }
-    currentLevel--
     
-    const currentLevelXP = Math.round(xpForLevel(currentLevel))
+    const currentLevelXP = currentLevel === 0 ? 0 : Math.round(xpForLevel(currentLevel))
     const nextLevelXP = Math.round(xpForLevel(currentLevel + 1))
     const xpIntoLevel = totalXP - currentLevelXP
     const xpNeededForLevel = nextLevelXP - currentLevelXP
     const percentage = Math.min((xpIntoLevel / xpNeededForLevel) * 100, 100)
-    const showPercentage = percentage.toFixed(1)
     const xpRemaining = Math.round(nextLevelXP - totalXP)
     
     return {
-        currentLevel,
-        nextLevel: currentLevel + 1,
+        currentLevel: currentLevel + 1,
+        nextLevel: currentLevel + 2,
         percentage,
-        showPercentage,
         xpRemaining,
-        totalXP,
+        totalXP: Math.round(totalXP),
         nextLevelXP
   }
+
+  
 
 }
 
 export default function XPBar({xp}: XPBarProps){
     const{
-        currentLevel,
+        currentLevel ,
         nextLevel,
-        showPercentage,
+        percentage,
         xpRemaining,
         totalXP,
         nextLevelXP
@@ -61,8 +61,8 @@ export default function XPBar({xp}: XPBarProps){
         <div>
             <p>Level: {currentLevel}</p>
             <p>Next Level: {nextLevel}</p>
-            <p>Percent: {showPercentage}%</p>
-            <p>EXP: {totalXP} / {nextLevelXP}</p>
+            <p>Percent: {Math.floor(percentage)}%</p>
+            <p>EXP: {Math.round(totalXP)} / {nextLevelXP}</p>
             <p>Remaining: {xpRemaining}</p>
 
         </div>

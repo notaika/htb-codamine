@@ -45,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
 		context.globalState.update(pressesKey, currentGlobalPresses + 1);
 
 		const xp = (currentWorkspacePresses + 1)/10;
-		const level : number = context.workspaceState.get(levelKey) ?? 0;
+		const level : number = context.workspaceState.get(levelKey) ?? 1;
 
 		provider.sendXPMessage(xp);
 		if (xp >= xpForLevel(level + 1)) {
@@ -136,8 +136,8 @@ function initializeXPTracking(context: vscode.ExtensionContext, provider: BruceV
 	let workspaceLevel : number | undefined = context.workspaceState.get(levelKey);
 
 	if (workspaceLevel === undefined) {
-		context.workspaceState.update(levelKey, 0);
-		workspaceLevel = 0;
+		context.workspaceState.update(levelKey, 1);
+		workspaceLevel = 1;
 	}
 
 	const xpToNext : number = xpForLevel(workspaceLevel);
