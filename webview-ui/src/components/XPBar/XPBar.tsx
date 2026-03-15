@@ -1,3 +1,5 @@
+import "./XPBar.css";
+
 interface XPBarProps {
     xp: number
 }
@@ -16,8 +18,6 @@ function xpForLevel(level: number): number {
   if (level <= 0) return 100;
   return 100 * (1.15 ** level) + xpForLevel(level - 1)
 }
-
-
 
 function getProgress(totalXP: number): ProgressResult {
 
@@ -43,8 +43,6 @@ function getProgress(totalXP: number): ProgressResult {
         nextLevelXP
   }
 
-  
-
 }
 
 export default function XPBar({xp}: XPBarProps){
@@ -64,7 +62,11 @@ export default function XPBar({xp}: XPBarProps){
             <p>Percent: {Math.floor(percentage)}%</p>
             <p>EXP: {Math.round(totalXP)} / {nextLevelXP}</p>
             <p>Remaining: {xpRemaining}</p>
-
+            <div className="progressContainer">
+                <div className="progress" style={{width: `${Math.floor(percentage)}%`}}>
+                    <span className="progressLabel">{Math.floor(percentage)}%</span>
+                </div>
+            </div>
         </div>
     )
 }

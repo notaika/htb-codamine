@@ -1,0 +1,21 @@
+.progressContainer {
+    height: 20px;
+    margin: 10px;
+    border: 2px solid white;
+    border-radius: 2px;
+}
+
+.progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0%;
+    height: 100%;
+    background-color: rgb(95, 11, 95);
+}
+
+.progressLabel {
+    padding: 0%;
+    margin: 0%;
+    font-size: 14px;
+}
