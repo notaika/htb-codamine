@@ -183,7 +183,7 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
 
 public async sendCommitSummary(commitMsg: string) {
   try {
-    const response = await fetch('http://localhost:3001/v1/messages', {
+    const response = await fetch('http://127.0.0.1:3001/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
