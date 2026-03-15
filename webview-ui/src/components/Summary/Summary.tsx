@@ -1,32 +1,15 @@
-import { useState, useEffect } from 'react';
+import "./summary.css";
+import { useAiMotivation } from "../../utils/hooks/apiHooks";
 
-export function Summary() {
-
-  const [summary, setSummary] = useState("");
-
-    function handleSetSummary(newSummary: string) {
-      setSummary(newSummary);
-    };
-  
-    useEffect(() => {
-      window.addEventListener('message', event => {
-        const message = event.data;
-  
-        if (message == undefined)
-          return;
-        
-        switch (message.type) {
-          case "aikaThing":
-            handleSetSummary(message.lines);
-            break;
-        }
-      })
-    });
+// TODO:
+// - summary re-renders each time. need to fix (useEffect)
+export default function Summary() {
+  const gitMessage = "fix: finally fixed the webview after 5 hours";
+  const aiSummary = useAiMotivation(gitMessage);
 
   return (
-    <div>
-      <h1>Summary</h1>
-      <p>{summary}</p>
+    <div className="summary">
+      <p className="summary__text">{aiSummary}</p>
     </div>
   );
 }
