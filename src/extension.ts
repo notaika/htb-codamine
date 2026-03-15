@@ -51,10 +51,16 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
+    // We only need the bundled JS. esbuild handles PNGs as dataurlprivate _getHtmlForWebview(webview: vscode.Webview) {
     // We only need the bundled JS. esbuild handles PNGs as dataurls.
     const scriptUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "out", "webview.js"),
     );
+
+    const styleUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(this._extensionUri, "out", "webview.css"),
+    );
+
     const nonce = getNonce();
 
     return `<!DOCTYPE html>
@@ -63,6 +69,7 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
       <meta charset="UTF-8">
       <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; img-src ${webview.cspSource} data:; script-src 'nonce-${nonce}' 'unsafe-eval';">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link href="${styleUri}" rel="stylesheet">
       <title>Brucey Loosey</title>
     </head>
     <body>

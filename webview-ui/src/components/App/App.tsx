@@ -8,6 +8,10 @@ function App() {
   return (
     <>
       <section id="center">
+        <div>
+          <div className="mushroom-idle-animation"></div>
+          <p>TESTING ONE TWO THREE</p>
+        </div>
         <div className="hero">
           <img src={heroImg} className="base" width="170" height="179" alt="" />
         </div>

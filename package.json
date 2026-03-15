@@ -13,17 +13,8 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "bruce-container",
-          "title": "Brucey Loosey",
-          "icon": "media/icon.svg"
-        }
-      ]
-    },
     "views": {
-      "bruce-container": [
+      "explorer": [
         {
           "type": "webview",
           "id": "bruce.window",

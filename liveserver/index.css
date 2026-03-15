@@ -1,0 +1,32 @@
+@keyframes mushroomRun {
+  0% {
+    background-position: 0px;
+  }
+  100% {
+    background-position: -640px;
+  }
+}
+
+@keyframes mushroomIdle {
+  0% {
+    background-position: 0px;
+  }
+  100% {
+    background-position: -210px;
+  }
+}
+.mushroom-idle-animation {
+  width: 30px;
+  height: 33px;
+  background-image: url("cropped-mushroom.png");
+  background-repeat: none;
+  animation: mushroomIdle 2s steps(7) infinite;
+}
+
+.mushroom-run-animation {
+  width: 100px;
+  height: 64px;
+  background-image: url("Mushroom-Run.png");
+  background-repeat: none;
+  animation: mushroomRun 0.5s steps(8) infinite;
+}
