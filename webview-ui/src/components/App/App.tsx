@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { LinesWritten } from "../LinesWritten/LinesWritten";
 import heroImg from "../../assets/images/hero.png";
 import "./App.css";
 
@@ -7,6 +8,7 @@ function App() {
 
   return (
     <>
+      <LinesWritten />
       <section id="center">
         <div>
           <div className="mushroom-idle-animation"></div>
