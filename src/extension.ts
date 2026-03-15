@@ -1,7 +1,9 @@
 import * as vscode from "vscode";
 
+const pressesKey = 'keypresses';
+const levelKey = 'level';
+
 export function activate(context: vscode.ExtensionContext) {
-  console.log("Brucey Loosey is active!");
 
   // 1. REGISTER THE SIDEBAR PROVIDER
   const provider = new BruceViewProvider(context.extensionUri);
@@ -26,6 +28,31 @@ export function activate(context: vscode.ExtensionContext) {
     },
   );
 
+  // 3. SET UP EVENT LISTENERS
+  //
+  //
+	initializeXPTracking(context, provider);
+  vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor | undefined) => {
+	initializeXPTracking(context, provider);
+  });
+
+  vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
+		const currentWorkspacePresses : number = context.workspaceState.get(pressesKey) ?? 0;
+		context.workspaceState.update(pressesKey, currentWorkspacePresses + 1);
+
+		const currentGlobalPresses : number = context.globalState.get(pressesKey) ?? 0;
+		context.globalState.update(pressesKey, currentGlobalPresses + 1);
+
+		const xp = (currentWorkspacePresses + 1)/10;
+		const level : number = context.workspaceState.get(levelKey) ?? 1;
+
+		provider.sendXPMessage(xp);
+		if (xp >= xpForLevel(level + 1)) {
+			context.workspaceState.update(levelKey, level + 1)
+			provider.sendLevelUpMessage(xpForLevel(level + 1));
+		}
+	});
+
   context.subscriptions.push(openPanel, motivationMsg);
 }
 
@@ -48,6 +75,35 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
       localResourceRoots: [this._extensionUri],
     };
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+  }
+
+  public sendInitMessage(xp: number, level: number, xpToNext: number) {
+	if (this._view) {
+		this._view.webview.postMessage({
+			type: 'initializeBar',
+			xp: xp,
+			level: level,
+			xpToNext: xpToNext
+		})
+	}
+  }
+
+  public sendXPMessage(xp: number) {
+	if (this._view) {
+		this._view.webview.postMessage({
+			type: 'updateXP',
+			xp: xp,
+		});
+	}
+  }
+
+  public sendLevelUpMessage(xpToNext: number) {
+	if (this._view) {
+		this._view.webview.postMessage({
+			type: 'levelUp',
+			xpToNext: xpToNext
+		});
+	}
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
@@ -87,6 +143,28 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
   </body>                                                                                    
   </html>`;
   }
+}
+
+function initializeXPTracking(context: vscode.ExtensionContext, provider: BruceViewProvider) {
+	const workspacePresses : number = context.workspaceState.get(pressesKey) ?? 0;
+	const xp : number = workspacePresses / 10;
+	let workspaceLevel : number | undefined = context.workspaceState.get(levelKey);
+
+	if (workspaceLevel === undefined) {
+		context.workspaceState.update(levelKey, 1);
+		workspaceLevel = 1;
+	}
+
+	const xpToNext : number = xpForLevel(workspaceLevel);
+	provider.sendInitMessage(xp, workspaceLevel, xpToNext);
+}
+	
+function xpForLevel(level: number): number {
+	if (level <= 0) {
+		return 100;
+	} else {
+		return 100 * (1.15)**(level) + xpForLevel(level - 1);
+	}
 }
 
 function getNonce() {
