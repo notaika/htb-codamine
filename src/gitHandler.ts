@@ -133,7 +133,7 @@ git.repositories; -> a Repository[];
 
 a Repository instance has:
     instance variables:
-        - readonly rootUri: Uri;
+        - readonly rootUri: Uri; erica sucks
 
     functions:
     - getCommit(ref: string): Promise<Commit> <- ??? need a hash :(
