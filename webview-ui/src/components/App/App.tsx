@@ -3,7 +3,7 @@ import "./App.css";
 import Summary from "../Summary/Summary";
 import Arsen from "../ForArsen/Arsen";
 import { useState, useEffect } from "react";
-import XPBar from "../XPBar";
+import XPBar from "../XPBar/XPBar";
 import LinesWritten from "../LinesWritten/LinesWritten";
 import Sprite from "../Sprite/Sprite";
 

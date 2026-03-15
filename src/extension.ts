@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
 
-const pressesKey = "keypresses";
-const levelKey = "level";
+const pressesKey = 'keypresses';
+const levelKey = 'level';
+const timestampKey = 'locTimestamp';
 const initLocKey = 'initLoc';
 const curLocKey = 'curLoc';
 
@@ -27,7 +28,24 @@ export function activate(context: vscode.ExtensionContext) {
     initializeXPTracking(context, provider);
   });
 
-    vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
+  vscode.workspace.onDidOpenTextDocument((e: vscode.TextDocument) => {
+    const uriString = e.uri.toString();
+
+    const currentTime = new Date();
+    const locTimestamp : number | undefined = context.workspaceState.get(`${uriString}.${timestampKey}`)
+    const locDate : Date | undefined = locTimestamp == undefined ? undefined : new Date(locTimestamp)
+
+    if (
+      locDate == undefined || 
+      (locDate.getDate() != currentTime.getDate()) ||
+      (locDate.getFullYear() != currentTime.getFullYear())
+    ) {
+      context.workspaceState.update(`${uriString}.${timestampKey}`, currentTime.getTime());
+      context.workspaceState.update(`${uriString}.${initLocKey}`, e.lineCount);
+    }
+  });
+
+  vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
 		const currentWorkspacePresses : number = context.workspaceState.get(pressesKey) ?? 0;
 		context.workspaceState.update(pressesKey, currentWorkspacePresses + 1);
 
@@ -44,18 +62,22 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		// Lines of code stuff
-		const locKey = `${e.document.uri.toString()}.${initLocKey}`;
-		const initialLoc : number = context.workspaceState.get(locKey) ?? 0;
+		let initialLoc: number | undefined = context.workspaceState.get(`${e.document.uri.toString()}.${initLocKey}`);
+    if (initialLoc == undefined) {
+      initialLoc = e.document.lineCount;
+      context.workspaceState.update(`${e.document.uri.toString()}.${initLocKey}`, e.document.lineCount);
+      context.workspaceState.update(`${e.document.uri.toString()}.${timestampKey}`, Date.now());
+    }
 
 		context.workspaceState.update(`${e.document.uri.toString()}.${curLocKey}`, e.document.lineCount);
 
 		// tally up total lines of code
 		let totalLoc : number = 0;
 		for (const doc of vscode.workspace.textDocuments) {
-			const docInitLoc : number = context.workspaceState.get(`${doc.uri.toString()}.${initLocKey}`) ?? 0;
 			const docLoc : number = context.workspaceState.get(`${doc.uri.toString()}.${curLocKey}`) ?? 0;
+			const docInitLoc : number = context.workspaceState.get(`${doc.uri.toString()}.${initLocKey}`) ?? docLoc;
 
-			totalLoc += docLoc - docInitLoc;
+			totalLoc += docLoc > docInitLoc ? docLoc - docInitLoc : 0;
 		}
 
 		provider.sendNumLinesMessage(totalLoc);
