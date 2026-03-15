@@ -3,7 +3,7 @@
   "displayName": "Brucey Loosey",
   "description": "Gamified coding for Brucey Loosey",
   "version": "0.0.1",
-  "publisher": "diversityHires2.0",
+  "publisher": "CoDIE-2026",
   "private": true,
   "engines": {
     "vscode": "^1.110.0"
