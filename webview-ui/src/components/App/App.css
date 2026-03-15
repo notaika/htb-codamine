@@ -1,0 +1,11 @@
+.dashboard {
+  display: flex-column;
+  justify-content: center;
+  background-image: url("../../assets/backgrounds/bg-forest.png");
+  background-size: cover;
+  min-height: 200px;
+}
+
+h1 {
+  font-family: "Times New Roman", Times, serif;
+}
