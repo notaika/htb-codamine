@@ -1,6 +1,6 @@
 {
-  "name": "brucey-loosey",
-  "displayName": "Brucey Loosey",
+  "name": "copamine",
+  "displayName": "Copamine",
   "description": "Gamified coding for Brucey Loosey",
   "version": "0.0.1",
   "publisher": "CoDIE-2026",
@@ -8,7 +8,7 @@
   "engines": {
     "vscode": "^1.110.0"
   },
-  "activationEvents": [
+  "activationEvents": [ 
     "onView:bruce.window"
   ],
   "main": "./out/extension.js",
