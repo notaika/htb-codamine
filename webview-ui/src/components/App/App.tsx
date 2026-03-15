@@ -1,5 +1,7 @@
 
 import "./App.css";
+import Summary from "../Summary/Summary";
+import Arsen from "../ForArsen/Arsen";
 import { useState, useEffect } from "react";
 import XPBar from "../XPBar";
 
@@ -45,9 +47,11 @@ function App() {
 
   return (
     <>
-    <div>
-      <XPBar xp={xp} />
-    </div>
+      <section id="panel" className="dashboard">
+        <Arsen />
+        <Summary />
+        <XPBar xp={xp} />
+      </section>
     </>
   );
 }
