@@ -37,3 +37,8 @@
     position: absolute;
     font-size: 14px;
 }
+
+.progressInfo2 {
+    justify-content: center !important;
+    align-items: center !important;
+}

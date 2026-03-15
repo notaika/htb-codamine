@@ -39,15 +39,13 @@ export default function XPBar({ xp }: XPBarProps) {
           </div>
           <span className="progressLabel">{Math.floor(percentage)}%</span>
         </div>
-        <div className="progressInfo">
+        <div className="progressInfo progressInfo2">
           <span>EXP: {Math.round(totalXP)} / {nextLevelXP}</span>
         </div>
       </div>
     </div>
   );
 }
-
-
 
 // Calculates the TOTAL cumulative XP needed to reach a given level
 // Recursive function that adds 15% more cost per level
@@ -95,8 +93,6 @@ function getProgress(totalXP: number): ProgressResult {
 
   // XP left until next level 
   const xpRemaining = Math.round(nextLevelXP - totalXP);
-
-
 
   return {
     currentLevel: currentLevel + 1, //internally will be 0, but will be displayed as level 1 to the user 
