@@ -30,18 +30,11 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   // 3. SET UP EVENT LISTENERS
-  vscode.workspace.onDidOpenTextDocument((e: vscode.TextDocument) => {
-	const workspacePresses : number = context.workspaceState.get(pressesKey) ?? 0;
-	const xp : number = workspacePresses / 10;
-	let workspaceLevel : number | undefined = context.workspaceState.get(levelKey);
-
-	if (workspaceLevel == undefined) {
-		context.workspaceState.update(levelKey, 0);
-		workspaceLevel = 0;
-	}
-
-	const xpToNext : number = xpForLevel(workspaceLevel + 1) - xp;
-	provider.sendInitMessage(xp, workspaceLevel, xpToNext);
+  //
+  //
+	initializeXPTracking(context, provider);
+  vscode.window.onDidChangeActiveTextEditor((e: vscode.TextEditor | undefined) => {
+	initializeXPTracking(context, provider);
   });
 
   vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
@@ -55,9 +48,9 @@ export function activate(context: vscode.ExtensionContext) {
 		const level : number = context.workspaceState.get(levelKey) ?? 0;
 
 		provider.sendXPMessage(xp);
-		if (xp >= xpForLevel(level)) {
+		if (xp >= xpForLevel(level + 1)) {
 			context.workspaceState.update(levelKey, level + 1)
-			provider.sendLevelUpMessage(xpForLevel(level + 1) - xp);
+			provider.sendLevelUpMessage(xpForLevel(level + 1));
 		}
 	});
 
@@ -100,7 +93,7 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
 	if (this._view) {
 		this._view.webview.postMessage({
 			type: 'updateXP',
-			xp: xp
+			xp: xp,
 		});
 	}
   }
@@ -110,7 +103,7 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
 		this._view.webview.postMessage({
 			type: 'levelUp',
 			xpToNext: xpToNext
-		})
+		});
 	}
   }
 
@@ -137,8 +130,26 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
   }
 }
 
+function initializeXPTracking(context: vscode.ExtensionContext, provider: BruceViewProvider) {
+	const workspacePresses : number = context.workspaceState.get(pressesKey) ?? 0;
+	const xp : number = workspacePresses / 10;
+	let workspaceLevel : number | undefined = context.workspaceState.get(levelKey);
+
+	if (workspaceLevel === undefined) {
+		context.workspaceState.update(levelKey, 0);
+		workspaceLevel = 0;
+	}
+
+	const xpToNext : number = xpForLevel(workspaceLevel);
+	provider.sendInitMessage(xp, workspaceLevel, xpToNext);
+}
+	
 function xpForLevel(level: number): number {
-	return level == 0 ? 0 : 100 * (1.15)**(level);
+	if (level <= 0) {
+		return 100;
+	} else {
+		return 100 * (1.15)**(level) + xpForLevel(level - 1);
+	}
 }
 
 function getNonce() {
