@@ -46,6 +46,19 @@ export function activate(context: vscode.ExtensionContext) {
       });
   });
 
+  initializeXPTracking(context, provider);
+  vscode.window.onDidChangeActiveTextEditor(
+    (e: vscode.TextEditor | undefined) => {
+      initializeXPTracking(context, provider);
+    },
+  );
+
+  /* Whenever the user opens a file for the first time:
+   * 1. Read the timestamp associated with that file in workspaceState
+   * 2. If the timestamp is on a different day than today:
+   *   a) Set the timestamp to now
+   *   b) Set the initial # of lines of code for that file to the current lines of code in that file
+   */
   vscode.workspace.onDidOpenTextDocument((e: vscode.TextDocument) => {
     const uriString = e.uri.toString();
 
@@ -69,6 +82,15 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
+  /* Whenever the user changes a file's contents (ie, on every keystroke):
+   * 1. Increment the global and workspace keypress counts
+   * 2. Divide workspace keypress count by 10 to get xp and send it to the webview
+   * 3. Determine if the user has leveled up, and if so, tell the webview
+   * 4. Get the initial lines of code (if undefined, set it and the timestamp based on current file contents)
+   * 5. Update the current lines of code for the current file in the workspace state with the current lines of code in the file
+   * 6. Add up the progress (current - initial) for each document in the workspace
+   * 7. Send the total progress (total lines of code written in project today) to webview
+   */
   vscode.workspace.onDidChangeTextDocument(
     (e: vscode.TextDocumentChangeEvent) => {
       const currentWorkspacePresses: number =
@@ -181,6 +203,7 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
   </html>`;
   }
 
+  // Sends a message to the webview to completely reset the xp display to these values
   public sendInitMessage(xp: number, level: number, xpToNext: number) {
     if (this._view) {
       this._view.webview.postMessage({
@@ -192,6 +215,7 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
+  // Sends a message to the webview to update the user's xp to this value
   public sendXPMessage(xp: number) {
     if (this._view) {
       this._view.webview.postMessage({
@@ -201,6 +225,7 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
+  // Sends a message to the webview that the user has leveled up. xpToNext should be the necessary xp for the new next level.
   public sendLevelUpMessage(xpToNext: number) {
     if (this._view) {
       this._view.webview.postMessage({
@@ -210,6 +235,7 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
+  // Sends a message to the webview containing the total lines of code the user has written in this workspace
   public sendNumLinesMessage(lines: number) {
     if (this._view) {
       this._view.webview.postMessage({
@@ -234,6 +260,7 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
   }
 }
 
+// Helper wrapper function around the code to set up the initial initmessage to the webview for a document
 function initializeXPTracking(
   context: vscode.ExtensionContext,
   provider: BruceViewProvider,
@@ -251,6 +278,7 @@ function initializeXPTracking(
   provider.sendInitMessage(xp, workspaceLevel, xpToNext);
 }
 
+// Given a level, calculate the xp to the next level
 function xpForLevel(level: number): number {
   if (level <= 0) {
     return 100;
