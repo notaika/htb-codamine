@@ -1,6 +1,5 @@
 import "./App.css";
 import Summary from "../Summary/Summary";
-import Sprite from "../ForArsen/Arsen";
 import Arsen from "../ForArsen/Arsen";
 import { useState, useEffect } from "react";
 import XPBar from "../XPBar/XPBar";
@@ -16,26 +15,24 @@ const vscode = acquireVsCodeApi();
 
 function App() {
   const [xp, setXp] = useState(0);
+  const [summary, setSummary] = useState("");
 
   useEffect(() => {
     const handler = (event: MessageEvent) => {
       const message = event.data;
 
-      console.log("message received:", message);
-
       switch (message.type) {
         case "initializeBar":
-          console.log("initializeBar fired, xp:", message.xp);
-
           setXp(message.xp);
           break;
         case "updateXP":
-          console.log("updateXP fired, xp:", message.xp);
           setXp(message.xp);
           vscode.setState({ xp: message.xp });
           break;
         case "levelUp":
-          console.log("levelup recieve", message.xpToNext);
+          break;
+        case "aiSummary":
+          setSummary(message.summary);
           break;
       }
     };
@@ -47,7 +44,7 @@ function App() {
   return (
     <>
       <section id="panel" className="dashboard">
-        <Summary />
+        <Summary summary={summary} />
         <Arsen />
         <XPBar xp={xp} />
         <LinesWritten />

@@ -43,6 +43,9 @@
     "test": "vscode-test",
     "build-webview": "npx esbuild webview-ui/src/main.tsx --bundle --outfile=out/webview.js --external:vscode --format=cjs --platform=browser --loader:.png=dataurl --loader:.svg=dataurl --loader:.css=css --jsx=automatic"
   },
+  "extensionDependencies": [
+    "vscode.git"
+  ],
   "devDependencies": {
     "@types/vscode": "^1.110.0",
     "@types/mocha": "^10.0.10",
