@@ -52,7 +52,7 @@ function App() {
       <section id="panel" className="dashboard">
         <Arsen />
         <Summary />
-        <Sprite />
+        <Sprite spriteType={"mushroom-idle-animation"}/>
         <XPBar xp={xp} />
         <LinesWritten />
       </section>
