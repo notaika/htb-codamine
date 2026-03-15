@@ -64,15 +64,14 @@ export function watchForCommits(
   onCommit: (data: { diff: string; message: string }) => void,
 ) {
   // Kept getting "possibly 'undefined'"", so... safety check
-  const gitExtension =
-    vscode.extensions.getExtension<GitExtension>("vscode.git").exports;
+  const gitExtension = vscode.extensions.getExtension("vscode.git");
 
   if (!gitExtension) {
     console.error("Git extension is undefined.");
     return;
   }
 
-  const git = gitExtension.getAPI(1);
+  const git = gitExtension.exports.getAPI(1);
 
   for (const repo of git.repositories) {
     const folder = repo.rootUri.fsPath; // The folder path as a string
