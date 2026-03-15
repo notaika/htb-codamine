@@ -5,17 +5,16 @@ import { useState, useEffect } from 'react';
 // TODO:
 // - summary re-renders each time. need to fix (useEffect)
 export default function Summary() {
-  const gitMessage = "fix: finally fixed the webview after 5 hours";
-
   const [summary, setSummary] = useState("");
+
   
   useEffect(() => {
+    const gitMessage = "fix: finally fixed the webview after 5 hours";
+
+    
     const newSummary = useAiMotivation(gitMessage);
     setSummary(newSummary);
     
-    // const triggerSummaryEvent = () => {
-    // };
-
     // when should summary pop up? when you do a new commit.
 
   }, []);
