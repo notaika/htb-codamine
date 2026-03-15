@@ -7,7 +7,6 @@ const initLocKey = 'initLoc';
 const curLocKey = 'curLoc';
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log("Brucey Loosey is active!");
 
   // 1. REGISTER THE SIDEBAR PROVIDER
   const provider = new BruceViewProvider(context.extensionUri);
