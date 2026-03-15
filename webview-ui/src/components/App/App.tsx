@@ -1,6 +1,6 @@
 import "./App.css";
 import Summary from "../Summary/Summary";
-import { Sprite } from "../ForArsen/Arsen";
+import Sprite from "../ForArsen/Arsen";
 import Arsen from "../ForArsen/Arsen";
 import { useState, useEffect } from "react";
 import XPBar from "../XPBar/XPBar";
