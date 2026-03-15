@@ -1,0 +1,15 @@
+@keyframes mushroomIdle {
+  0% {
+    background-position: 0px;
+  }
+  100% {
+    background-position: -210px;
+  }
+}
+.mushroom-idle-animation {
+  width: 30px;
+  height: 33px;
+  background-image: url("../../assets/cropped-mushroom.png");
+  background-repeat: none;
+  animation: mushroomIdle 2s steps(7) infinite;
+}
