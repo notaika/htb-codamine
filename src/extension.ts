@@ -4,6 +4,7 @@ import { getAiSummary } from "./aiSummary";
 
 const pressesKey = "keypresses";
 const levelKey = "level";
+const timestampKey = "locTimestamp";
 const initLocKey = "initLoc";
 const curLocKey = "curLoc";
 
@@ -32,6 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   // 3. SET UP EVENT LISTENERS
+  // Commit Listener
   watchForCommits(context, (data) => {
     vscode.window.showInformationMessage("Committed: " + data.message);
 
@@ -40,16 +42,32 @@ export function activate(context: vscode.ExtensionContext) {
         provider.sendAiSummary(summary);
       })
       .catch((error) => {
-        console.error("Unable to generate summary");
+        console.error("Could not generate summary:", error);
       });
   });
 
-  initializeXPTracking(context, provider);
-  vscode.window.onDidChangeActiveTextEditor(
-    (e: vscode.TextEditor | undefined) => {
-      initializeXPTracking(context, provider);
-    },
-  );
+  vscode.workspace.onDidOpenTextDocument((e: vscode.TextDocument) => {
+    const uriString = e.uri.toString();
+
+    const currentTime = new Date();
+    const locTimestamp: number | undefined = context.workspaceState.get(
+      `${uriString}.${timestampKey}`,
+    );
+    const locDate: Date | undefined =
+      locTimestamp == undefined ? undefined : new Date(locTimestamp);
+
+    if (
+      locDate == undefined ||
+      locDate.getDate() != currentTime.getDate() ||
+      locDate.getFullYear() != currentTime.getFullYear()
+    ) {
+      context.workspaceState.update(
+        `${uriString}.${timestampKey}`,
+        currentTime.getTime(),
+      );
+      context.workspaceState.update(`${uriString}.${initLocKey}`, e.lineCount);
+    }
+  });
 
   vscode.workspace.onDidChangeTextDocument(
     (e: vscode.TextDocumentChangeEvent) => {
@@ -71,8 +89,20 @@ export function activate(context: vscode.ExtensionContext) {
       }
 
       // Lines of code stuff
-      const locKey = `${e.document.uri.toString()}.${initLocKey}`;
-      const initialLoc: number = context.workspaceState.get(locKey) ?? 0;
+      let initialLoc: number | undefined = context.workspaceState.get(
+        `${e.document.uri.toString()}.${initLocKey}`,
+      );
+      if (initialLoc === undefined) {
+        initialLoc = e.document.lineCount;
+        context.workspaceState.update(
+          `${e.document.uri.toString()}.${initLocKey}`,
+          e.document.lineCount,
+        );
+        context.workspaceState.update(
+          `${e.document.uri.toString()}.${timestampKey}`,
+          Date.now(),
+        );
+      }
 
       context.workspaceState.update(
         `${e.document.uri.toString()}.${curLocKey}`,
@@ -82,13 +112,13 @@ export function activate(context: vscode.ExtensionContext) {
       // tally up total lines of code
       let totalLoc: number = 0;
       for (const doc of vscode.workspace.textDocuments) {
-        const docInitLoc: number =
-          context.workspaceState.get(`${doc.uri.toString()}.${initLocKey}`) ??
-          0;
         const docLoc: number =
           context.workspaceState.get(`${doc.uri.toString()}.${curLocKey}`) ?? 0;
+        const docInitLoc: number =
+          context.workspaceState.get(`${doc.uri.toString()}.${initLocKey}`) ??
+          docLoc;
 
-        totalLoc += docLoc - docInitLoc;
+        totalLoc += docLoc > docInitLoc ? docLoc - docInitLoc : 0;
       }
 
       provider.sendNumLinesMessage(totalLoc);
@@ -124,10 +154,6 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
       vscode.Uri.joinPath(this._extensionUri, "out", "webview.js"),
     );
 
-    const apiUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this._extensionUri, "src", "app", "test-api.js"),
-    );
-
     const styleUri = webview.asWebviewUri(
       vscode.Uri.joinPath(this._extensionUri, "out", "webview.css"),
     );
@@ -151,7 +177,6 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
   <body>                                                                                     
     <div id="root">Loading Brucey Loosey...</div>                                            
     <script nonce="${nonce}" src="${scriptUri}"></script>                                    
-    <script nonce="${nonce}" src="${apiUri}"></script>                                       
   </body>                                                                                    
   </html>`;
   }
@@ -194,6 +219,11 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
+  /**
+   * Passes the AI generated summary to Summary React Component.
+   *
+   * @param summary ai generated summary
+   */
   public sendAiSummary(summary: string) {
     if (this._view) {
       this._view.webview.postMessage({

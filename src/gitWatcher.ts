@@ -76,7 +76,7 @@ export function watchForCommits(
     const folder = repo.rootUri.fsPath;
 
     let lastCommitHash = repo.state.HEAD?.commit;
-    let safetyDelay: NodeJS.Timeout | undefined;
+    let debounceTimer: NodeJS.Timeout | undefined;
 
     const triggerOnCommit = () => {
       getCommitChanges(folder)
@@ -86,11 +86,12 @@ export function watchForCommits(
           });
         })
         .catch((error) => {
+          // Keep this one error log for critical failures
           console.error("Could not grab commit message: ", error);
         });
     };
 
-    // Track state changes
+    // Track state changes (including commits)
     const stateListener = repo.state.onDidChange(() => {
       const currentHash = repo.state.HEAD?.commit;
 
@@ -99,20 +100,20 @@ export function watchForCommits(
         lastCommitHash = currentHash;
 
         // Debounce to avoid multiple triggers if git is busy
-        if (safetyDelay) {
-          clearTimeout(safetyDelay);
+        if (debounceTimer) {
+          clearTimeout(debounceTimer);
         }
-        safetyDelay = setTimeout(triggerOnCommit, 1500);
+        debounceTimer = setTimeout(triggerOnCommit, 1500);
       }
     });
 
+    // We keep this as a backup
     const commitListener = repo.onDidCommit(() => {
       triggerOnCommit();
     });
 
     context.subscriptions.push(stateListener, commitListener);
   };
-
   // Set up existing repositories
   for (const repo of git.repositories) {
     setupRepo(repo);
