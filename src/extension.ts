@@ -2,6 +2,9 @@ import * as vscode from "vscode";
 
 const pressesKey = 'keypresses';
 const levelKey = 'level';
+const timestampKey = 'locTimestamp';
+const initLocKey = 'initLoc';
+const curLocKey = 'curLoc';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log("Brucey Loosey is active!");
@@ -37,6 +40,23 @@ export function activate(context: vscode.ExtensionContext) {
 	initializeXPTracking(context, provider);
   });
 
+  vscode.workspace.onDidOpenTextDocument((e: vscode.TextDocument) => {
+	const uriString = e.uri.toString();
+
+	const currentTime = new Date();
+	const locTimestamp : number | undefined = context.workspaceState.get(`${uriString}.${timestampKey}`)
+	const locDate : Date | undefined = locTimestamp == undefined ? undefined : new Date(locTimestamp)
+
+	if (
+		locDate == undefined || 
+		(locDate.getDate() != currentTime.getDate()) ||
+		(locDate.getFullYear() != currentTime.getFullYear())
+	) {
+		context.workspaceState.update(`${uriString}.${timestampKey}`, currentTime.getTime());
+		context.workspaceState.update(`${uriString}.${initLocKey}`, e.lineCount);
+	}
+  });
+
   vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
 		const currentWorkspacePresses : number = context.workspaceState.get(pressesKey) ?? 0;
 		context.workspaceState.update(pressesKey, currentWorkspacePresses + 1);
@@ -45,13 +65,30 @@ export function activate(context: vscode.ExtensionContext) {
 		context.globalState.update(pressesKey, currentGlobalPresses + 1);
 
 		const xp = (currentWorkspacePresses + 1)/10;
-		const level : number = context.workspaceState.get(levelKey) ?? 0;
+		const level : number = context.workspaceState.get(levelKey) ?? 1;
 
 		provider.sendXPMessage(xp);
 		if (xp >= xpForLevel(level + 1)) {
 			context.workspaceState.update(levelKey, level + 1)
 			provider.sendLevelUpMessage(xpForLevel(level + 1));
 		}
+
+		// Lines of code stuff
+		const locKey = `${e.document.uri.toString()}.${initLocKey}`;
+		const initialLoc : number = context.workspaceState.get(locKey) ?? 0;
+
+		context.workspaceState.update(`${e.document.uri.toString()}.${curLocKey}`, e.document.lineCount);
+
+		// tally up total lines of code
+		let totalLoc : number = 0;
+		for (const doc of vscode.workspace.textDocuments) {
+			const docInitLoc : number = context.workspaceState.get(`${doc.uri.toString()}.${initLocKey}`) ?? 0;
+			const docLoc : number = context.workspaceState.get(`${doc.uri.toString()}.${curLocKey}`) ?? 0;
+
+			totalLoc += docLoc - docInitLoc;
+		}
+
+		provider.sendNumLinesMessage(totalLoc);
 	});
 
   context.subscriptions.push(openPanel, motivationMsg);
@@ -107,6 +144,15 @@ class BruceViewProvider implements vscode.WebviewViewProvider {
 	}
   }
 
+  public sendNumLinesMessage(lines: number) {
+	if (this._view) {
+		this._view.webview.postMessage({
+			type: 'numLines',
+			lines: lines
+		});
+	}
+  }
+
   private _getHtmlForWebview(webview: vscode.Webview) {
     // We only need the bundled JS. esbuild handles PNGs as dataurls.
     const scriptUri = webview.asWebviewUri(
@@ -136,8 +182,8 @@ function initializeXPTracking(context: vscode.ExtensionContext, provider: BruceV
 	let workspaceLevel : number | undefined = context.workspaceState.get(levelKey);
 
 	if (workspaceLevel === undefined) {
-		context.workspaceState.update(levelKey, 0);
-		workspaceLevel = 0;
+		context.workspaceState.update(levelKey, 1);
+		workspaceLevel = 1;
 	}
 
 	const xpToNext : number = xpForLevel(workspaceLevel);
