@@ -1,7 +1,7 @@
 {
   "name": "copamine",
-  "displayName": "Copamine",
-  "description": "Gamified coding for Brucey Loosey",
+  "displayName": "Codamine",
+  "description": "A VSCode extension that gamifies coding by giving you XP for each keystroke in a project, tracking the number of lines of code you've written, and motivating you with a motivational mascot.",
   "version": "0.0.1",
   "publisher": "CoDIE-2026",
   "private": true,
@@ -18,7 +18,7 @@
         {
           "type": "webview",
           "id": "bruce.window",
-          "name": "brucey loosey"
+          "name": "Codamine"
         }
       ]
     },
