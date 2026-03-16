@@ -1,7 +1,5 @@
 # Codamine
 
-<<<<<<< HEAD
-
 > **Get your daily dose of coding dopamine with your buddy Codamine!**
 
 ---
@@ -136,4 +134,3 @@ Download VSCode and install the extension “Codamine” from the VSCode. Open a
 - Unlock sprites as you level up and be able to switch between them
 - Vanity title that changes with your level
 - More insults
-  > > > > > > > ec4cf6dd01905e540422a753372559a31c90c9fc
