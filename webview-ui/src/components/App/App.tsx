@@ -9,7 +9,7 @@ import Sprite from "../Sprite/Sprite";
 
 declare function acquireVsCodeApi(): {
   postMessage: (message: unknown) => void
-  getState: () => any
+  getState: () => unknown
   setState: (state: unknown) => void
 }
 
