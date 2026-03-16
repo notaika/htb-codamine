@@ -1,0 +1,24 @@
+.panel {
+  background-image: url("../../assets/bg.png");
+  background-repeat: no-repeat;
+  background-size: 1592px auto;
+  background-position: bottom left;
+  position: relative;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+.codeBuddy {
+  width: 150px;
+  height: 150px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+
+  /* Lock position to fixed pixel offsets for total stability */
+  position: absolute;
+  bottom: 300px;
+  left: 40px;
+
+  z-index: 10;
+}

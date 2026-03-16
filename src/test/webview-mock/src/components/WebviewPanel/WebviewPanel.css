@@ -1,0 +1,60 @@
+.webview-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.view {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.webview-header {
+  border-bottom: 1px solid var(--vscode-panel-border);
+  margin-bottom: 20px;
+}
+
+.webview-header h1 {
+  font-size: 1.2rem;
+  margin: 0 0 8px 0;
+  color: var(--vscode-editor-foreground);
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.section h2 {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  color: var(--vscode-editor-foreground);
+  opacity: 0.7;
+  margin-bottom: 12px;
+}
+
+.button-group {
+  display: flex;
+  gap: 8px;
+}
+
+.status-card {
+  background: var(--vscode-panel-background);
+  border: 1px solid var(--vscode-panel-border);
+  padding: 12px;
+  border-radius: 4px;
+  box-shadow: var(--vscode-widget-shadow);
+}
+
+.status-label {
+  color: #4ec9b0; /* VS Code green */
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* -- */
