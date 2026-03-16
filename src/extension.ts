@@ -41,7 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		provider.sendXPMessage(xp);
 		if (xp >= xpForLevel(level + 1)) {
-			context.workspaceState.update(levelKey, level + 1)
+			context.workspaceState.update(levelKey, level + 1);
 			provider.sendLevelUpMessage(xpForLevel(level + 1));
 		}
 
@@ -63,11 +63,11 @@ export function activate(context: vscode.ExtensionContext) {
 		provider.sendNumLinesMessage(totalLoc);
 	});
 
-  const gitExtension = vscode.extensions.getExtension('vscode.git')
+  const gitExtension = vscode.extensions.getExtension('vscode.git');
 
   if (gitExtension) {
     gitExtension.activate().then(() => {
-      const git = gitExtension.exports.getAPI(1)
+      const git = gitExtension.exports.getAPI(1);
 
       // wait for repositories to load
       const onDidOpenRepo = git.onDidOpenRepository(() => {
@@ -75,57 +75,61 @@ export function activate(context: vscode.ExtensionContext) {
         if (git.repositories.length > 0) {
 
         let lastCommitSha: string | undefined = 
-          context.workspaceState.get('lastCommitSha') ?? git.repositories[0].state.HEAD?.commit
+          context.workspaceState.get('lastCommitSha') ?? git.repositories[0].state.HEAD?.commit;
 
         git.repositories[0].state.onDidChange(async () => { 
-          const head = git.repositories[0].state.HEAD
+          const head = git.repositories[0].state.HEAD;
 
         if (head?.commit) {
-          if(head.commit === lastCommitSha) return
+          if(head.commit === lastCommitSha){
+            return;
+          } 
 
-          lastCommitSha = head.commit
+          lastCommitSha = head.commit;
 
-          context.workspaceState.update('lastCommitSha', head.commit) 
+          context.workspaceState.update('lastCommitSha', head.commit);
 
-          const commit = await git.repositories[0].getCommit(head.commit)
-          const commitMsg = commit.message
+          const commit = await git.repositories[0].getCommit(head.commit);
+          const commitMsg = commit.message;
       
           if (commitMsg) {
-            provider.sendCommitSummary(commitMsg)
+            provider.sendCommitSummary(commitMsg);
           }
         }
-      })
+      });
 
-        onDidOpenRepo.dispose() // stop listening once first repo is found <--then only 1 repo can be open at a time???????
+        onDidOpenRepo.dispose(); // stop listening once first repo is found <--then only 1 repo can be open at a time???????
         }
-        })
+        });
 
     // also check if repos already exist
     if (git.repositories.length > 0) {
         
-      let lastCommitSha: string | undefined = git.repositories[0].state.HEAD?.commit
+      let lastCommitSha: string | undefined = git.repositories[0].state.HEAD?.commit;
 
       git.repositories[0].state.onDidChange(async () => {
 
-        const head = git.repositories[0].state.HEAD
+        const head = git.repositories[0].state.HEAD;
 
         if (head?.commit) {
 
           //only fire if commit SHA is different from last time
-          if(head.commit === lastCommitSha) return
+          if(head.commit === lastCommitSha){
+            return;
+          }
 
-          lastCommitSha = head.commit //update last known SHA
+          lastCommitSha = head.commit; //update last known SHA
 
-          const commit = await git.repositories[0].getCommit(head.commit)
-          const commitMsg = commit.message
+          const commit = await git.repositories[0].getCommit(head.commit);
+          const commitMsg = commit.message;
           
           if (commitMsg) {
-            provider.sendCommitSummary(commitMsg)
+            provider.sendCommitSummary(commitMsg);
               }
             }
-          })
+          });
         }
-      })
+      });
     }
 
   context.subscriptions.push(openPanel, motivationMsg);
@@ -199,20 +203,22 @@ public async sendCommitSummary(commitMsg: string) {
         max_tokens: 1024,
         messages: [{ role: 'user', content: commitMsg }]
       })
-    }) 
+    }) ;
+
     const data = await response.json() as {
       content: { type: string; text: string } []
-    }
-    const summary = data.content?.[0]?.text ?? ''
+    };
+
+    const summary = data.content?.[0]?.text ?? '';
 
     if (this._view) {
       this._view.webview.postMessage({
         type: 'commitSummary',
         summary: summary
-      })
+      });
     }
   } catch {
-    console.log('Mock API offline')
+    console.log('Mock API offline');
   }
 }
 
