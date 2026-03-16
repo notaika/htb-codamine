@@ -63,47 +63,52 @@ export function activate(context: vscode.ExtensionContext) {
 		provider.sendNumLinesMessage(totalLoc);
 	});
 
-const gitExtension = vscode.extensions.getExtension('vscode.git')
+  const gitExtension = vscode.extensions.getExtension('vscode.git')
 
-if (gitExtension) {
-  gitExtension.activate().then(() => {
-    const git = gitExtension.exports.getAPI(1)
+  if (gitExtension) {
+    gitExtension.activate().then(() => {
+      const git = gitExtension.exports.getAPI(1)
 
-    // wait for repositories to load
-    const onDidOpenRepo = git.onDidOpenRepository(() => {
-      console.log('git repos found:', git.repositories.length)
+      // wait for repositories to load
+      const onDidOpenRepo = git.onDidOpenRepository(() => {
 
-      if (git.repositories.length > 0) {
-        console.log('watching repo:', git.repositories[0].rootUri.path)
+        if (git.repositories.length > 0) {
 
-        let lastCommitSha: string | undefined = git.repositories[0].state.HEAD?.commit
+        let lastCommitSha: string | undefined = 
+          context.workspaceState.get('lastCommitSha') ?? git.repositories[0].state.HEAD?.commit
 
-
-        git.repositories[0].state.onDidChange(async () => {
-          console.log('git state change')
+        git.repositories[0].state.onDidChange(async () => { 
           const head = git.repositories[0].state.HEAD
-          if (head?.commit) {
-            if(head.commit === lastCommitSha) return
-            lastCommitSha = head.commit
 
-            const commit = await git.repositories[0].getCommit(head.commit)
-            const commitMsg = commit.message
-            console.log('commit message:', commitMsg)
-            if (commitMsg) {
-              provider.sendCommitSummary(commitMsg)
-            }
+        if (head?.commit) {
+          if(head.commit === lastCommitSha) return
+
+          lastCommitSha = head.commit
+
+          context.workspaceState.update('lastCommitSha', head.commit) 
+
+          const commit = await git.repositories[0].getCommit(head.commit)
+          const commitMsg = commit.message
+      
+          if (commitMsg) {
+            provider.sendCommitSummary(commitMsg)
           }
-        })
+        }
+      })
 
         onDidOpenRepo.dispose() // stop listening once first repo is found <--then only 1 repo can be open at a time???????
-      }
-      })
+        }
+        })
 
     // also check if repos already exist
     if (git.repositories.length > 0) {
+        
       let lastCommitSha: string | undefined = git.repositories[0].state.HEAD?.commit
+
       git.repositories[0].state.onDidChange(async () => {
+
         const head = git.repositories[0].state.HEAD
+
         if (head?.commit) {
 
           //only fire if commit SHA is different from last time
@@ -113,7 +118,7 @@ if (gitExtension) {
 
           const commit = await git.repositories[0].getCommit(head.commit)
           const commitMsg = commit.message
-          console.log('new commit', commitMsg)
+          
           if (commitMsg) {
             provider.sendCommitSummary(commitMsg)
               }
