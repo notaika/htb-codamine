@@ -2,6 +2,22 @@ import * as vscode from "vscode"; // give access to VS Code API
 import { exec } from "child_process"; // gives exec() to run terminal commands?
 
 /**
+ * The data passed to the commit callback.
+ */
+interface CommitData {
+  diff: string;
+  message: string;
+}
+
+/**
+ * Tracks the commit state to detect new commits in a repo.
+ */
+interface RepoTracker {
+  lastCommitHash: string | undefined;
+  safetyDelay: NodeJS.Timeout | undefined;
+}
+
+/**
  * Gets the most recent commit message from git.
  *
  * @param folder folder to run the git command in
@@ -51,10 +67,11 @@ const getCommitChanges = (folder: string): Promise<string> => {
 
 /**
  * A listener that gets triggered everytime a user makes a commit.
- * See: https://github.com/microsoft/vscode/blob/main/extensions/git/src/api/git.constants.ts
- * See: https://github.com/microsoft/vscode/blob/main/extensions/git/src/api/extension.ts
- * See: https://github.com/microsoft/vscode/blob/main/extensions/git/src/api/api1.ts#L24
- * See: https://github.com/microsoft/vscode/blob/main/extensions/git/src/api/git.d.ts
+ * This function was created because VS Code's `onDidCommit()` function wasn't reliable.
+ * e.g. if a user commited from the integrated terminal vs. their own terminal.
+ *
+ * To fix that, we watch for any change on the repo's state, then manually check if commit hash
+ * hash has changed to get full coverage.
  *
  * @param context manages cleanup (given by VS Code in activate())
  * @param onCommit the callback event listener that watches for a commit
