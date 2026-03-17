@@ -12,7 +12,9 @@ export function activate(context: vscode.ExtensionContext) {
   // 1. REGISTER THE SIDEBAR PROVIDER
   const provider = new BruceViewProvider(context.extensionUri);
   context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider("bruce.window", provider),
+    vscode.window.registerWebviewViewProvider("bruce.window", provider, {
+      webviewOptions: { retainContextWhenHidden: true },
+    }),
   );
 
   // 2. COMMANDS
