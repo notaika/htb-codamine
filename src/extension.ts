@@ -37,6 +37,8 @@ export function activate(context: vscode.ExtensionContext) {
   watchForCommits(context, (data) => {
     vscode.window.showInformationMessage("Committed: " + data.message);
 
+    console.log("Diff content: " + data);
+
     getAiSummary(data.diff)
       .then((summary) => {
         provider.sendAiSummary(summary);
