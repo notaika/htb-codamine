@@ -14,6 +14,7 @@ interface CommitData {
  */
 interface RepoTracker {
   lastCommitHash: string | undefined;
+  lastBranch: string | undefined;
   safetyDelay: NodeJS.Timeout | undefined;
 }
 
@@ -48,6 +49,11 @@ const getCommitMessage = (folder: string): Promise<string> => {
     });
   });
 };
+
+// Repository - i think i can use this instead of that custom damn exec class..?
+// getCommit(ref: string): Promise<Commit> {
+// 		return this.repository.getCommit(ref);
+// 	}
 
 /**
  * Returns the changes between the previous and most recent commit.
@@ -147,12 +153,22 @@ function setupRepo(
 
   const tracker: RepoTracker = {
     lastCommitHash: repo.state.HEAD?.commit,
+    lastBranch: repo.state.HEAD?.name, // added to fix the API firing bug
     safetyDelay: undefined,
   };
 
   // 1. Native terminal/external commits
   const stateListener = repo.state.onDidChange(() => {
     const currentHash = repo.state.HEAD?.commit;
+    const currentBranch = repo.state.HEAD?.name;
+
+    // If the branch changed, this is a branch switch, NOT a new commit.
+    // Just update both values silently and bail out.
+    if (currentBranch !== tracker.lastBranch) {
+      tracker.lastBranch = currentBranch;
+      tracker.lastCommitHash = currentHash;
+      return; //  don't fire onCommit
+    }
 
     if (currentHash && currentHash !== tracker.lastCommitHash) {
       tracker.lastCommitHash = currentHash;
@@ -170,7 +186,7 @@ function setupRepo(
   });
 
   // 2. VS Code's direct commit event
-  const commitListener = repo.onDidChange(() => {
+  const commitListener = repo.onDidCommit(() => {
     triggerOnCommit(folder, onCommit);
   });
 
