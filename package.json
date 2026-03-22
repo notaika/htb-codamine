@@ -1,5 +1,5 @@
 {
-  "name": "codamine",
+  "name": "copamine",
   "displayName": "Codamine",
   "description": "A VSCode extension that gamifies coding by giving you XP for each keystroke in a project, tracking the number of lines of code you've written, and motivating you with a motivational mascot.",
   "version": "0.2.0",
