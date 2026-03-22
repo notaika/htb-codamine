@@ -1,6 +1,6 @@
 import "./App.css";
 import Summary from "../Summary/Summary";
-import Arsen from "../ForArsen/Arsen";
+import Notification from "../Notification/Notification";
 import { useState, useEffect } from "react";
 import XPBar from "../XPBar/XPBar";
 import LinesWritten from "../LinesWritten/LinesWritten";
@@ -45,7 +45,7 @@ function App() {
     <>
       <section id="panel" className="dashboard">
         <Summary summary={summary} />
-        <Arsen />
+        <Notification />
         <XPBar xp={xp} />
         <LinesWritten />
       </section>

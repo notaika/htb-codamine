@@ -2,7 +2,7 @@
   "name": "copamine",
   "displayName": "Codamine",
   "description": "A VSCode extension that gamifies coding by giving you XP for each keystroke in a project, tracking the number of lines of code you've written, and motivating you with a motivational mascot.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "CoDIE-2026",
   "private": true,
   "engines": {
@@ -18,7 +18,8 @@
         {
           "type": "webview",
           "id": "bruce.window",
-          "name": "Codamine"
+          "name": "Codamine",
+          "icon": "./media/logo.png"
         }
       ]
     },
