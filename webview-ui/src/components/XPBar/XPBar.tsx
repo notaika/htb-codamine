@@ -15,7 +15,6 @@ interface ProgressResult {
   nextLevelXP: number;
 }
 
-
 // Receives xp from App.tsx which gets it from extension.ts via postMessage
 export default function XPBar({ xp }: XPBarProps) {
   const {

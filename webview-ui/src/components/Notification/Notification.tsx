@@ -1,8 +1,15 @@
 import { useState, useEffect, useRef } from "react";
-import "./Arsen.css";
+import "./Notification.css";
 import { generateMotivationQuips } from "../../utils/utils";
 
-export default function Arsen() {
+/**
+ * React component that represents a white notification bubble with a 
+ * funny randomly selected quip inside of it. This notification bubble
+ * appears and disappears after a certain amount of time, and also can be
+ * summoned if the mushroom mascot is clicked.
+ * @returns 
+ */
+export default function Notification() {
   const [quip, setQuip] = useState<string | null>(null);
   const [phase, setPhase] = useState<"hidden" | "enter" | "visible" | "exit">(
     "hidden",
@@ -35,12 +42,10 @@ export default function Arsen() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(
-    () => () => {
+  useEffect(() => () => {
       if (exitTimerRef.current) clearTimeout(exitTimerRef.current);
       if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-    },
-    [],
+    },[],
   );
 
   return (
